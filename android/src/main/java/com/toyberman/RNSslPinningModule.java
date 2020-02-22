@@ -119,7 +119,8 @@ public class RNSslPinningModule extends ReactContextBaseJavaModule {
     public static String getDomainName(String url) throws URISyntaxException {
         URI uri = new URI(url);
         String domain = uri.getHost();
-        return domain.startsWith("www.") ? domain.substring(4) : domain;
+        return InternetDomainName.from(domain).topPrivateDomain().name(); //[VP] change domain url return
+//        return domain.startsWith("www.") ? domain.substring(4) : domain; //code before
     }
 
 
