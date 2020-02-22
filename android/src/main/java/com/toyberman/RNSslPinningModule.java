@@ -2,7 +2,6 @@ package com.toyberman;
 
 import android.os.Build;
 
-import androidx.annotation.NonNull;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
@@ -15,6 +14,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableNativeMap;
 import com.facebook.react.modules.network.ForwardingCookieHandler;
+import com.google.common.net.InternetDomainName;
 import com.toyberman.Utils.OkHttpUtils;
 
 import org.json.JSONException;
@@ -247,7 +247,6 @@ public class RNSslPinningModule extends ReactContextBaseJavaModule {
 
     }
 
-    @NonNull
     private WritableMap buildResponseHeaders(Response okHttpResponse) {
         Headers responseHeaders = okHttpResponse.headers();
         Set<String> headerNames = responseHeaders.names();
