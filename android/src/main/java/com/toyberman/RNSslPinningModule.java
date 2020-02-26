@@ -1,6 +1,7 @@
 package com.toyberman;
 
 import android.os.Build;
+import android.util.Log;
 
 
 import com.facebook.react.bridge.Arguments;
@@ -120,7 +121,7 @@ public class RNSslPinningModule extends ReactContextBaseJavaModule {
         URI uri = new URI(url);
         String domain = uri.getHost();
         return InternetDomainName.from(domain).topPrivateDomain().name(); //[VP] change domain url return
-//        return domain.startsWith("www.") ? domain.substring(4) : domain; //code before
+        //        return domain.startsWith("www.") ? domain.substring(4) : domain; //code before
     }
 
 
@@ -174,7 +175,9 @@ public class RNSslPinningModule extends ReactContextBaseJavaModule {
             if (options.getMap(OPT_SSL_PINNING_KEY).hasKey("certs")) {
                 ReadableArray certs = options.getMap(OPT_SSL_PINNING_KEY).getArray("certs");
                 if (certs.size() == 0) {
-                    throw new RuntimeException("certs array is empty");
+//                    throw new RuntimeException("certs array is empty"); //code before
+                    callback.invoke("certsArrayIsEmpty"); //[vp] change to callback meessage
+                    return;
                 }
                 if (certs != null) {
                     String domainName;
@@ -186,7 +189,7 @@ public class RNSslPinningModule extends ReactContextBaseJavaModule {
                     client = OkHttpUtils.buildOkHttpClient(cookieJar, domainName, certs, options);
                 }
             } else {
-                callback.invoke(new Throwable("key certs was not found"), null);
+                callback.invoke("keyCertNotFound");
             }
         } else {
             //no ssl pinning
@@ -200,7 +203,13 @@ public class RNSslPinningModule extends ReactContextBaseJavaModule {
             client.newCall(request).enqueue(new okhttp3.Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    callback.invoke(e.getMessage());
+                    if(e.getMessage().equals("java.security.cert.CertPathValidatorException: Trust anchor for certification path not found.")) {
+                        Log.e("failute","rest");
+                        callback.invoke("trustAnchorNotFound");
+                    } else {
+                        callback.invoke(e.getMessage());
+                    }
+
                 }
 
                 @Override
@@ -235,13 +244,16 @@ public class RNSslPinningModule extends ReactContextBaseJavaModule {
                     if (okHttpResponse.isSuccessful()) {
                         callback.invoke(null, response);
                     } else {
+                        Log.e("failure 2", response.toString());
                         callback.invoke(response, null);
                     }
+
                 }
             });
 
 
         } catch (JSONException e) {
+            Log.e("failure", e.getMessage());
             callback.invoke(e, null);
         }
 
