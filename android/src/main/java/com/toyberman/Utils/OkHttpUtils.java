@@ -208,8 +208,12 @@ public class OkHttpUtils {
                                         }
 
                                     } else {
-                                        String value = part.getString(1);
-                                        multipartBodyBuilder.addFormDataPart(key, value);
+                                        try{// add string exception 
+                                            String value = part.getString(1);
+                                            multipartBodyBuilder.addFormDataPart(key, value);
+                                        }catch(Exception e){
+                                            e.printStackTrace();
+                                        }
                                     }
 
                                 }
