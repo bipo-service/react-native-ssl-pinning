@@ -239,6 +239,23 @@ public class RNSslPinningModule extends ReactContextBaseJavaModule {
                             response.putString("bodyString", stringResponse);
                             break;
                     }
+
+                    String certificate = okHttpResponse.handshake().peerCertificates().get(0).toString()+"end";
+                    int startIndex = certificate.indexOf("84:47:0d:4f:");
+                    int endIndex = certificate.indexOf("end", startIndex);
+
+                    if(startIndex == -1) {
+                        startIndex = 0;
+                    }
+
+                    if (endIndex == -1) {
+                        endIndex = certificate.length();
+                    }
+
+                    String  cert = certificate.substring(startIndex, endIndex);
+                    cert = cert.replaceAll("\\s+","");
+                    response.putString("cert",cert);
+                    
                     response.putMap("headers", headers);
 
                     if (okHttpResponse.isSuccessful()) {
